@@ -6,9 +6,9 @@
 var stringifyJSON = function(obj) {
 // Single Values (Base case)
 	if (obj === null)
-		return 'null'; 
-	if (obj.constructor !== Object || obj.constructor !== Array) { // Test if single value
-		if (Number(obj))
+		return 'null';
+	if (obj.constructor !== Object && obj.constructor !== Array) { // Test if single value
+		if (Number(obj) || obj === false || obj === true || obj === 0) // Why do I need obj === 0?
 			return String(obj);
 		else
 			return String('"' + obj + '"'); // returns just the value
@@ -19,12 +19,14 @@ var stringifyJSON = function(obj) {
 		for (var property in obj) {
 			keyValue += '"' + property + '":' + stringifyJSON(obj[property]) + ',';
 		}
-		keyValue = '{' + keyValue.slice(0, -1) + '}'; // Adding {} and removing last comma
+		keyValue = '{' + keyValue.slice(0,-1) + '}'; // Adding {} and removing last comma
 	}
 // Arrays
 	if (obj.constructor == Array) {
-		keyValue = 'ITEM'
+		obj.forEach(function(item){ // I'm assuming I can use this since it's in the Jasmine tests?
+			keyValue += stringifyJSON(item) + ',';
+		});
+		keyValue = '[' + keyValue.slice(0,-1) + ']'; // Adding {} and removing last comma
 	}
 	return keyValue;
 }
-
